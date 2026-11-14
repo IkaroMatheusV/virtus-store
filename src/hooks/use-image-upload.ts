@@ -19,7 +19,7 @@ function getExtension(file: File): string {
 export function useImageUpload() {
   const [isUploading, setIsUploading] = useState(false);
 
-  async function uploadImages(files: File[]): Promise<UploadResult> {
+  async function uploadImages(files: File[], folder = "products"): Promise<UploadResult> {
     setIsUploading(true);
     const supabase = createBrowserSupabaseClient();
     const result: UploadResult = { urls: [], errors: [] };
@@ -35,7 +35,7 @@ export function useImageUpload() {
           continue;
         }
 
-        const path = `products/${crypto.randomUUID()}.${getExtension(file)}`;
+        const path = `${folder}/${crypto.randomUUID()}.${getExtension(file)}`;
         const { error } = await supabase.storage
           .from(PRODUCT_IMAGES_BUCKET)
           .upload(path, file, { cacheControl: "31536000", contentType: file.type });

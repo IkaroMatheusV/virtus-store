@@ -99,7 +99,7 @@ export async function getStoreSettings(): Promise<StoreSettings> {
 
   const { data, error } = await supabase
     .from("store_settings")
-    .select("whatsapp_number, instagram_handle, city, shipping_note, hero_title, hero_subtitle, promo_text")
+    .select("whatsapp_number, instagram_handle, city, shipping_note, hero_title, hero_subtitle, promo_text, hero_image_url")
     .eq("id", 1)
     .maybeSingle<SettingsRow>();
 

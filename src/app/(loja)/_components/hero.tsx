@@ -8,7 +8,7 @@ import type { StoreSettings } from "@/lib/types";
 
 type HeroProps = {
   settings: StoreSettings;
-  /** Foto de um produto em destaque; sem foto mostra o monograma sobre concreto. */
+  /** Foto do look (escolhida no painel ou de um produto em destaque); sem foto mostra o monograma. */
   heroImage: string | null;
 };
 

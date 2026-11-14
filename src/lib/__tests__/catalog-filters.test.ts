@@ -28,6 +28,14 @@ describe("filterProducts", () => {
     expect(result.map((product) => product.slug)).toEqual(["camiseta-basica-premium", "camiseta-oversized-concreto"]);
   });
 
+  it("esconde o produto no filtro de um tamanho sem peças", () => {
+    const products = DEMO_PRODUCTS.map((product) =>
+      product.slug === "camiseta-basica-premium" ? { ...product, stock: { P: 1, M: 0, G: 0, GG: 0 } } : product,
+    );
+    const result = filterProducts(products, { category: "camisetas", size: "GG", sort: "recentes", onSale: false });
+    expect(result.map((product) => product.slug)).toEqual(["camiseta-oversized-concreto"]);
+  });
+
   it("filtra ofertas e ordena pelo preço efetivo", () => {
     const result = filterProducts(DEMO_PRODUCTS, { sort: "menor-preco", onSale: true });
     expect(result.map((product) => product.promoPrice)).toEqual([69.9, 84.9, 219.9]);

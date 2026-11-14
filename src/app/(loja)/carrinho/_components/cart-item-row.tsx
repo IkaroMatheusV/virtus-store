@@ -44,6 +44,7 @@ export function CartItemRow({ item, onQuantityChange, onRemove }: CartItemRowPro
             value={item.quantity}
             onChange={onQuantityChange}
             ariaLabel={`Quantidade de ${item.name}`}
+            max={item.maxQuantity}
             size="sm"
           />
           <p className="font-heading font-semibold text-gold">{formatPrice(item.unitPrice * item.quantity)}</p>

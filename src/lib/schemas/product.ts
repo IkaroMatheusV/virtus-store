@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_STOCK_PER_SIZE } from "@/lib/stock";
 
 const MAX_IMAGES = 6;
 
@@ -24,6 +25,17 @@ export const productFormSchema = z
     sizes: z.array(z.string().trim().min(1).max(10)).min(1, "Adicione ao menos um tamanho"),
     colors: z.array(z.string().trim().min(1).max(30)),
     images: z.array(z.string().url()).max(MAX_IMAGES, `Máximo de ${MAX_IMAGES} fotos`),
+    /** Liga o controle de peças por tamanho. */
+    trackStock: z.boolean(),
+    /** Peças por tamanho (só vale com trackStock ligado). */
+    stock: z.record(
+      z.string(),
+      z
+        .number({ message: "Informe a quantidade" })
+        .int("Use números inteiros")
+        .min(0, "A quantidade não pode ser negativa")
+        .max(MAX_STOCK_PER_SIZE, "Quantidade muito alta"),
+    ),
     isNew: z.boolean(),
     isFeatured: z.boolean(),
     isActive: z.boolean(),
@@ -56,3 +68,9 @@ export function toMoney(value: string): number | null {
 }
 
 export { MAX_IMAGES };
+
+/** Estoque a gravar no banco: só os tamanhos atuais (faltando = 0), ou null sem controle. */
+export function toStockColumn(values: Pick<ProductFormValues, "trackStock" | "stock" | "sizes">): Record<string, number> | null {
+  if (!values.trackStock) return null;
+  return Object.fromEntries(values.sizes.map((size) => [size, values.stock[size] ?? 0]));
+}

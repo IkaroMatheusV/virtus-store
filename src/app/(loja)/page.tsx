@@ -17,7 +17,9 @@ export default async function HomePage() {
     getSaleProducts(SALE_LIMIT),
   ]);
 
-  const heroImage = featuredProducts.find((product) => product.images.length > 0)?.images[0] ?? null;
+  // Foto escolhida no painel; sem ela, a capa do primeiro produto em destaque com foto.
+  const heroImage =
+    settings.heroImageUrl || (featuredProducts.find((product) => product.images.length > 0)?.images[0] ?? null);
 
   return (
     <>

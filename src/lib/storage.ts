@@ -12,3 +12,6 @@ export function getStoragePathFromPublicUrl(url: string): string | null {
   if (index === -1) return null;
   return decodeURIComponent(url.slice(index + marker.length));
 }
+
+/** Pasta do bucket com as fotos do look da página inicial. */
+export const HERO_IMAGES_FOLDER = "hero";

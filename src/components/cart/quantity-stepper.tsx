@@ -11,6 +11,8 @@ type QuantityStepperProps = {
   ariaLabel?: string;
   /** Permite chegar a 0 (usado no carrinho para remover). */
   min?: number;
+  /** Limite superior (estoque); padrão: limite do carrinho. */
+  max?: number;
   size?: "sm" | "default";
 };
 
@@ -21,6 +23,7 @@ export function QuantityStepper({
   ariaLabelledBy,
   ariaLabel,
   min = 1,
+  max = MAX_ITEM_QUANTITY,
   size = "default",
 }: QuantityStepperProps) {
   const buttonClass = cn(
@@ -51,7 +54,7 @@ export function QuantityStepper({
         type="button"
         className={buttonClass}
         onClick={() => onChange(value + 1)}
-        disabled={value >= MAX_ITEM_QUANTITY}
+        disabled={value >= max}
         aria-label="Aumentar quantidade"
       >
         <Plus className="size-4" strokeWidth={1.5} />

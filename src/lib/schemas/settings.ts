@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getStoragePathFromPublicUrl } from "@/lib/storage";
 
 /** Schema das configurações da loja editáveis no painel VIP. */
 export const settingsFormSchema = z.object({
@@ -17,6 +18,11 @@ export const settingsFormSchema = z.object({
   heroTitle: z.string().trim().min(2, "Informe o título").max(60),
   heroSubtitle: z.string().trim().max(200),
   promoText: z.string().trim().max(120),
+  /** Foto do look da página inicial: vazio ou uma foto enviada para o Storage da loja. */
+  heroImageUrl: z
+    .string()
+    .trim()
+    .refine((value) => value === "" || getStoragePathFromPublicUrl(value) !== null, "Envie a foto pelo botão Adicionar"),
 });
 
 export type SettingsFormValues = z.infer<typeof settingsFormSchema>;

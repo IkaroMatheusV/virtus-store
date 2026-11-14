@@ -10,6 +10,8 @@ export type CartItem = {
   color: string | null;
   unitPrice: number;
   quantity: number;
+  /** Limite de peças daquele tamanho no momento em que foi adicionado (estoque). */
+  maxQuantity?: number;
 };
 
 export type NewCartItem = Omit<CartItem, "key" | "quantity"> & { quantity?: number };
@@ -20,19 +22,23 @@ export function buildCartItemKey(productId: string, size: string | null, color: 
   return [productId, size ?? "-", color ?? "-"].join("|");
 }
 
-function clampQuantity(quantity: number): number {
-  return Math.min(MAX_ITEM_QUANTITY, Math.max(1, Math.floor(quantity)));
+function clampQuantity(quantity: number, maxQuantity: number = MAX_ITEM_QUANTITY): number {
+  const limit = Math.max(1, Math.min(MAX_ITEM_QUANTITY, maxQuantity));
+  return Math.min(limit, Math.max(1, Math.floor(quantity)));
 }
 
 /** Adiciona um item; se já existir a mesma variação, soma a quantidade. */
 export function addCartItem(items: CartItem[], newItem: NewCartItem): CartItem[] {
   const key = buildCartItemKey(newItem.productId, newItem.size, newItem.color);
-  const quantity = clampQuantity(newItem.quantity ?? 1);
+  const quantity = clampQuantity(newItem.quantity ?? 1, newItem.maxQuantity);
   const existing = items.find((item) => item.key === key);
 
   if (existing) {
+    const maxQuantity = newItem.maxQuantity ?? existing.maxQuantity;
     return items.map((item) =>
-      item.key === key ? { ...item, quantity: clampQuantity(item.quantity + quantity) } : item,
+      item.key === key
+        ? { ...item, maxQuantity, quantity: clampQuantity(item.quantity + quantity, maxQuantity) }
+        : item,
     );
   }
   return [...items, { ...newItem, key, quantity }];
@@ -41,7 +47,7 @@ export function addCartItem(items: CartItem[], newItem: NewCartItem): CartItem[]
 /** Atualiza a quantidade; quantidade < 1 remove o item. */
 export function updateCartItemQuantity(items: CartItem[], key: string, quantity: number): CartItem[] {
   if (quantity < 1) return removeCartItem(items, key);
-  return items.map((item) => (item.key === key ? { ...item, quantity: clampQuantity(quantity) } : item));
+  return items.map((item) => (item.key === key ? { ...item, quantity: clampQuantity(quantity, item.maxQuantity) } : item));
 }
 
 export function removeCartItem(items: CartItem[], key: string): CartItem[] {

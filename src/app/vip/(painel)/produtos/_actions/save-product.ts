@@ -5,7 +5,7 @@ import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
 import { requireVip } from "@/lib/auth";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { productFormSchema, toMoney, type ProductFormValues } from "@/lib/schemas/product";
+import { productFormSchema, toMoney, toStockColumn, type ProductFormValues } from "@/lib/schemas/product";
 import { slugify } from "@/lib/slugify";
 import { createSessionClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/lib/types";
@@ -55,6 +55,7 @@ export async function saveProductAction(
       sizes: values.sizes,
       colors: values.colors,
       images: values.images,
+      stock: toStockColumn(values),
       is_new: values.isNew,
       is_featured: values.isFeatured,
       is_active: values.isActive,

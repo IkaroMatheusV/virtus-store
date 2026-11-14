@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { MAX_IMAGES, productFormSchema, type ProductFormValues } from "@/lib/schemas/product";
 import type { Category, Product } from "@/lib/types";
 import { saveProductAction } from "../_actions/save-product";
-import { ImageManager } from "./image-manager";
+import { ImageManager } from "../../_components/image-manager";
+import { StockFields } from "./stock-fields";
 import { TagsInput } from "./tags-input";
 
 const SIZE_SUGGESTIONS = ["P", "M", "G", "GG", "XG", "38", "40", "42", "44", "46", "Único"];
@@ -50,6 +51,9 @@ function getDefaultValues(product?: Product): ProductFormValues {
     sizes: product?.sizes ?? [],
     colors: product?.colors ?? [],
     images: product?.images ?? [],
+    // Produto novo já nasce com controle de estoque; os antigos só se já tiverem.
+    trackStock: product ? product.stock !== null : true,
+    stock: product?.stock ?? {},
     isNew: product?.isNew ?? true,
     isFeatured: product?.isFeatured ?? false,
     isActive: product?.isActive ?? true,
@@ -64,6 +68,8 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     resolver: zodResolver(productFormSchema),
     defaultValues: getDefaultValues(product),
   });
+  const sizes = useWatch({ control: form.control, name: "sizes" });
+  const isTrackingStock = useWatch({ control: form.control, name: "trackStock" });
 
   function handleSubmit(values: ProductFormValues) {
     startTransition(async () => {
@@ -225,6 +231,46 @@ export function ProductForm({ categories, product }: ProductFormProps) {
               </Field>
             )}
           />
+        </FieldGroup>
+      </FieldSet>
+
+      <FieldSet>
+        <FieldLegend className="section-label">Estoque</FieldLegend>
+        <FieldGroup className="gap-5">
+          <Controller
+            name="trackStock"
+            control={form.control}
+            render={({ field }) => (
+              <Field orientation="horizontal" className="max-w-md">
+                <FieldContent>
+                  <FieldLabel htmlFor="product-trackStock">Controlar quantidade de peças</FieldLabel>
+                  <FieldDescription>
+                    Informe quantas peças tem de cada tamanho. Ao vender pelo WhatsApp, baixe a quantidade aqui.
+                  </FieldDescription>
+                </FieldContent>
+                <Switch id="product-trackStock" checked={field.value} onCheckedChange={field.onChange} />
+              </Field>
+            )}
+          />
+          {isTrackingStock && (
+            <Controller
+              name="stock"
+              control={form.control}
+              render={({ field, formState }) => (
+                <StockFields
+                  sizes={sizes}
+                  value={field.value}
+                  onChange={field.onChange}
+                  errors={Object.fromEntries(
+                    Object.entries(formState.errors.stock ?? {}).map(([size, error]) => [
+                      size,
+                      (error as { message?: string } | undefined)?.message,
+                    ]),
+                  )}
+                />
+              )}
+            />
+          )}
         </FieldGroup>
       </FieldSet>
 

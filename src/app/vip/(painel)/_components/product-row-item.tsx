@@ -8,7 +8,9 @@ import { Price } from "@/components/brand/price";
 import { ProductImage } from "@/components/product/product-image";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { getSoldOutSizes, getTotalStock } from "@/lib/stock";
 import type { Product } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { toggleProductAction, type ToggleField } from "../_actions/toggle-product";
 import { DeleteProductButton } from "./delete-product-button";
 
@@ -40,6 +42,7 @@ export function ProductRowItem({ product }: { product: Product }) {
           {product.categoryName ?? "Sem categoria"}
           {product.isNew && " · Novo"}
         </p>
+        <StockSummary product={product} />
       </div>
 
       <div className="col-start-2 flex flex-wrap items-center gap-x-6 gap-y-2 md:contents">
@@ -73,5 +76,20 @@ export function ProductRowItem({ product }: { product: Product }) {
         </div>
       </div>
     </li>
+  );
+}
+
+/** Resumo do estoque na linha do painel: total de peças e tamanhos esgotados. */
+function StockSummary({ product }: { product: Product }) {
+  const total = getTotalStock(product);
+  if (total === null) return <p className="text-xs text-silver-muted/70">Estoque não controlado</p>;
+
+  const soldOutSizes = getSoldOutSizes(product);
+  const hasSomeSoldOut = total > 0 && soldOutSizes.length > 0;
+  return (
+    <p className={cn("text-xs", total === 0 ? "font-medium text-destructive" : "text-gold")}>
+      {total === 0 ? "Esgotado" : `${total} ${total === 1 ? "peça" : "peças"}`}
+      {hasSomeSoldOut && <span className="text-silver-muted"> · sem {soldOutSizes.join(", ")}</span>}
+    </p>
   );
 }

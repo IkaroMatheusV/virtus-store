@@ -9,7 +9,9 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegen
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { settingsFormSchema, type SettingsFormValues } from "@/lib/schemas/settings";
+import { HERO_IMAGES_FOLDER } from "@/lib/storage";
 import type { StoreSettings } from "@/lib/types";
+import { ImageManager } from "../../_components/image-manager";
 import { saveSettingsAction } from "../_actions/save-settings";
 
 type TextFieldConfig = {
@@ -101,7 +103,32 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
       </FieldSet>
       <FieldSet>
         <FieldLegend className="section-label">Página inicial</FieldLegend>
-        <FieldGroup>{HOME_FIELDS.map(renderField)}</FieldGroup>
+        <FieldGroup>
+          <Controller
+            name="heroImageUrl"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>Foto do look</FieldLabel>
+                <div className="max-w-40">
+                  <ImageManager
+                    value={field.value ? [field.value] : []}
+                    onChange={(urls) => field.onChange(urls[0] ?? "")}
+                    maxImages={1}
+                    folder={HERO_IMAGES_FOLDER}
+                    hint=""
+                  />
+                </div>
+                <FieldDescription>
+                  Aparece no quadro ao lado do título. Use uma foto vertical (4:5), de até 5 MB. Sem foto, a loja
+                  mostra a capa de um produto em destaque. Depois de trocar, clique em Salvar.
+                </FieldDescription>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+          {HOME_FIELDS.map(renderField)}
+        </FieldGroup>
       </FieldSet>
       <div>
         <Button type="submit" size="lg" disabled={isPending}>

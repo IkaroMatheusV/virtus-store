@@ -1,4 +1,5 @@
 import { getEffectivePrice, isOnSale } from "./format-price";
+import { getSizeStock } from "./stock";
 import type { Product } from "./types";
 
 export const SORT_OPTIONS = [
@@ -50,7 +51,10 @@ export function buildCatalogHref(current: CatalogFilters, changes: Partial<Catal
 export function filterProducts(products: Product[], filters: CatalogFilters): Product[] {
   const filtered = products.filter((product) => {
     if (filters.category && product.categorySlug !== filters.category) return false;
-    if (filters.size && !product.sizes.includes(filters.size)) return false;
+    // Quem filtra por tamanho quer comprar: tamanho sem peças não conta.
+    if (filters.size && (!product.sizes.includes(filters.size) || getSizeStock(product, filters.size) === 0)) {
+      return false;
+    }
     if (filters.onSale && !isOnSale(product.price, product.promoPrice)) return false;
     return true;
   });

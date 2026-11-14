@@ -20,6 +20,8 @@ export type Product = {
   sizes: string[];
   colors: string[];
   images: string[];
+  /** Peças por tamanho (ex.: { P: 3, M: 0 }); `null` = estoque não controlado. */
+  stock: Record<string, number> | null;
   isNew: boolean;
   isFeatured: boolean;
   isActive: boolean;
@@ -35,6 +37,8 @@ export type StoreSettings = {
   heroTitle: string;
   heroSubtitle: string;
   promoText: string;
+  /** Foto do look da página inicial; vazio = usa a foto de um produto em destaque. */
+  heroImageUrl: string;
 };
 
 /** Resultado padrão das Server Actions. */

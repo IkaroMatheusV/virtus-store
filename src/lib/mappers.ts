@@ -1,3 +1,4 @@
+import { parseStock } from "./stock";
 import type { Category, Product, StoreSettings } from "./types";
 
 /** Linha de produto como vem do Supabase (com a categoria embutida). */
@@ -12,6 +13,7 @@ export type ProductRow = {
   sizes: string[] | null;
   colors: string[] | null;
   images: string[] | null;
+  stock: unknown;
   is_new: boolean;
   is_featured: boolean;
   is_active: boolean;
@@ -29,11 +31,12 @@ export type SettingsRow = {
   hero_title: string;
   hero_subtitle: string;
   promo_text: string;
+  hero_image_url: string;
 };
 
 /** Colunas pedidas ao Supabase para montar um Product. */
 export const PRODUCT_SELECT =
-  "id, name, slug, description, category_id, price, promo_price, sizes, colors, images, is_new, is_featured, is_active, updated_at, category:categories(name, slug)";
+  "id, name, slug, description, category_id, price, promo_price, sizes, colors, images, stock, is_new, is_featured, is_active, updated_at, category:categories(name, slug)";
 
 export function mapProduct(row: ProductRow): Product {
   return {
@@ -49,6 +52,7 @@ export function mapProduct(row: ProductRow): Product {
     sizes: row.sizes ?? [],
     colors: row.colors ?? [],
     images: row.images ?? [],
+    stock: parseStock(row.stock),
     isNew: row.is_new,
     isFeatured: row.is_featured,
     isActive: row.is_active,
@@ -69,5 +73,6 @@ export function mapSettings(row: SettingsRow): StoreSettings {
     heroTitle: row.hero_title,
     heroSubtitle: row.hero_subtitle,
     promoText: row.promo_text,
+    heroImageUrl: row.hero_image_url ?? "",
   };
 }

@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   heroTitle: "Vista sua melhor versão",
   heroSubtitle: "Peças selecionadas para o homem que se veste bem todos os dias. Enviamos para todo o Brasil.",
   promoText: "",
+  heroImageUrl: "",
 };
 
 export const DEMO_CATEGORIES: Category[] = [
@@ -139,6 +140,7 @@ export const DEMO_PRODUCTS: Product[] = DEMO_SEEDS.map(({ categorySlug, ...seed 
     categoryName: category?.name ?? null,
     categorySlug: category?.slug ?? null,
     images: [],
+    stock: null,
     isActive: true,
     updatedAt: "2026-01-01T00:00:00.000Z",
   };

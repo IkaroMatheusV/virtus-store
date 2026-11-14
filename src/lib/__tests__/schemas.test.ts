@@ -10,6 +10,8 @@ const validProduct: ProductFormValues = {
   sizes: ["M"],
   colors: [],
   images: [],
+  trackStock: true,
+  stock: { M: 2 },
   isNew: true,
   isFeatured: false,
   isActive: true,
@@ -52,6 +54,7 @@ describe("settingsFormSchema", () => {
     heroTitle: "Vista sua melhor versão",
     heroSubtitle: "",
     promoText: "",
+    heroImageUrl: "",
   };
 
   it("aceita configurações válidas", () => {
@@ -60,5 +63,15 @@ describe("settingsFormSchema", () => {
 
   it("rejeita WhatsApp sem DDD", () => {
     expect(settingsFormSchema.safeParse({ ...validSettings, whatsappNumber: "99999-1234" }).success).toBe(false);
+  });
+
+  it("aceita foto do look enviada para o Storage da loja", () => {
+    const heroImageUrl = "https://projeto.supabase.co/storage/v1/object/public/product-images/hero/foto.jpg";
+    expect(settingsFormSchema.safeParse({ ...validSettings, heroImageUrl }).success).toBe(true);
+  });
+
+  it("rejeita foto do look de outro site", () => {
+    const heroImageUrl = "https://outro-site.com/foto.jpg";
+    expect(settingsFormSchema.safeParse({ ...validSettings, heroImageUrl }).success).toBe(false);
   });
 });

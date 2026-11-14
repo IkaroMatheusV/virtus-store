@@ -11,10 +11,20 @@ type ImageManagerProps = {
   value: string[];
   onChange: (value: string[]) => void;
   maxImages: number;
+  /** Pasta do Storage onde as fotos são salvas. Padrão: "products". */
+  folder?: string;
+  /** Dica exibida abaixo das fotos. */
+  hint?: string;
 };
 
 /** Upload, remoção e escolha da foto de capa (a primeira da lista). */
-export function ImageManager({ value, onChange, maxImages }: ImageManagerProps) {
+export function ImageManager({
+  value,
+  onChange,
+  maxImages,
+  folder = "products",
+  hint = `Até ${maxImages} fotos (JPG, PNG ou WEBP, máx. 5 MB). Use fundo de concreto e formato 4:5 ou quadrado.`,
+}: ImageManagerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { uploadImages, isUploading } = useImageUpload();
   const canAddMore = value.length < maxImages;
@@ -24,7 +34,7 @@ export function ImageManager({ value, onChange, maxImages }: ImageManagerProps) 
     event.target.value = "";
     if (files.length === 0) return;
 
-    const { urls, errors } = await uploadImages(files);
+    const { urls, errors } = await uploadImages(files, folder);
     if (urls.length > 0) onChange([...value, ...urls]);
     errors.forEach((message) => toast.error(message));
   }
@@ -39,13 +49,13 @@ export function ImageManager({ value, onChange, maxImages }: ImageManagerProps) 
 
   return (
     <div className="flex flex-col gap-3">
-      <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+      <ul className={maxImages === 1 ? "grid grid-cols-1" : "grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6"}>
         {value.map((url, index) => (
           <li key={url} className="group relative">
             <div className="concrete-surface relative aspect-[4/5] overflow-hidden rounded-sm border border-border">
               <Image src={url} alt={`Foto ${index + 1}`} fill sizes="160px" className="object-cover" />
             </div>
-            {index === 0 ? (
+            {maxImages === 1 ? null : index === 0 ? (
               <span className="absolute bottom-1 left-1 rounded-sm bg-gold px-1.5 font-heading text-[0.5625rem] font-semibold uppercase tracking-[0.15em] text-virtus-black">
                 Capa
               </span>
@@ -87,13 +97,11 @@ export function ImageManager({ value, onChange, maxImages }: ImageManagerProps) 
         ref={inputRef}
         type="file"
         accept={ACCEPTED_IMAGE_TYPES.join(",")}
-        multiple
+        multiple={maxImages > 1}
         hidden
         onChange={handleFilesSelected}
       />
-      <p className="text-xs text-silver-muted">
-        Até {maxImages} fotos (JPG, PNG ou WEBP, máx. 5 MB). Use fundo de concreto e formato 4:5 ou quadrado.
-      </p>
+      {hint && <p className="text-xs text-silver-muted">{hint}</p>}
     </div>
   );
 }

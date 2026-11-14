@@ -1,6 +1,6 @@
 -- =============================================================
 -- Virtus Store — INSTALAÇÃO COMPLETA (cole tudo no SQL Editor e clique em Run)
--- Gerado a partir de migrations/0001_init.sql + seed.sql. Pode rodar mais de uma vez.
+-- Gerado a partir de migrations/0001_init.sql + seed.sql + 0002_estoque_e_foto_look.sql. Pode rodar mais de uma vez.
 -- =============================================================
 
 -- =============================================================
@@ -211,3 +211,24 @@ from (values
 ) as p(name, slug, description, category_slug, price, promo_price, sizes, colors, is_new, is_featured)
 join public.categories c on c.slug = p.category_slug
 on conflict (slug) do nothing;
+
+
+-- =============================================================
+-- Virtus Store — estoque por tamanho + foto do look da página inicial
+-- Pode rodar mais de uma vez.
+-- =============================================================
+
+-- Estoque por tamanho, ex.: {"P": 3, "M": 5, "G": 0}.
+-- null = estoque não controlado (produto sempre disponível).
+alter table public.products
+  add column if not exists stock jsonb;
+
+alter table public.products
+  drop constraint if exists products_stock_is_object;
+alter table public.products
+  add constraint products_stock_is_object
+  check (stock is null or jsonb_typeof(stock) = 'object');
+
+-- Foto do look em destaque na página inicial ('' = usa a foto de um produto em destaque).
+alter table public.store_settings
+  add column if not exists hero_image_url text not null default '';
