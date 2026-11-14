@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------
+   Identidade Virtus — Preto, Ouro e Prata
+   70% preto/grafite · 20% prata · 10% ouro (só onde se olha ou clica)
+   ------------------------------------------------------------------ */
+@theme inline {
+  /* Paleta da marca */
+  --color-virtus-black: #0b0b0c;
+  --color-graphite: #17171a;
+  --color-concrete: #3a3a3f;
+  --color-gold: #c2a464;
+  --color-gold-light: #e2cc8e;
+  --color-silver: #edebe6;
+  --color-silver-muted: #a9a7a2;
+
+  /* Tipografia: Montserrat (títulos, preços) · Inter (texto) */
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-montserrat);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Tokens shadcn */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Cantos quase retos (2–6 px), ar de alfaiataria */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: var(--radius);
+  --radius-xl: 6px;
+  --radius-2xl: 6px;
+  --radius-3xl: 6px;
+  --radius-4xl: 6px;
+}
+
+/* Tema único (escuro): a logo vive sempre sobre preto */
+:root {
+  --radius: 4px;
+  --background: #0b0b0c;
+  --foreground: #edebe6;
+  --card: #17171a;
+  --card-foreground: #edebe6;
+  --popover: #17171a;
+  --popover-foreground: #edebe6;
+  --primary: #c2a464;
+  --primary-foreground: #0b0b0c;
+  --secondary: #17171a;
+  --secondary-foreground: #edebe6;
+  --muted: #17171a;
+  --muted-foreground: #a9a7a2;
+  --accent: #3a3a3f;
+  --accent-foreground: #edebe6;
+  --destructive: #d9776b;
+  --border: #2a2a2f;
+  --input: #3a3a3f;
+  --ring: #c2a464;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-virtus-black);
+  }
+}
+
+@layer components {
+  /* Títulos: Montserrat caixa alta, espaçamento largo como o "VIRTUS" da logo */
+  .heading-display {
+    font-family: var(--font-heading);
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    line-height: 1.1;
+    color: var(--color-silver);
+  }
+
+  /* Rótulo de seção: 14px · 0.3em · ouro */
+  .section-label {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--color-gold);
+  }
+  @media (min-width: 768px) {
+    .section-label {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Textura sutil de concreto para fundos de foto */
+  .concrete-surface {
+    background-color: var(--color-concrete);
+    background-image: radial-gradient(rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      radial-gradient(rgb(0 0 0 / 0.12) 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    background-position: 0 0, 1px 2px;
+  }
+
+  /* Grade preta dos flat lays do feed */
+  .grid-surface {
+    background-color: var(--color-virtus-black);
+    background-image: linear-gradient(rgb(237 235 230 / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(237 235 230 / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+}

@@ -1,0 +1,8 @@
+# Deploy na Netlify. O adaptador oficial (@netlify/plugin-nextjs / OpenNext)
+# é aplicado automaticamente ao detectar Next.js.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
